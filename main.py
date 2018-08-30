@@ -13,6 +13,16 @@ import json
 import shutil
 import urllib.request
 
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
 #validation
 def inputNumber(message):
   while True:
@@ -23,6 +33,7 @@ def inputNumber(message):
     else:
        return userInput
        break
+
 
 #show credits
 print(" ______ _       _     _                              ")
@@ -47,6 +58,7 @@ print("")
 pics_directory = "pics"
 #albums_for_once = 10
 albums_for_once = inputNumber("How many albums you need to download? (default : 200) : ") or "2"
+print("")
 
 #get last album
 last_album_file = [f for f in os.listdir('.') if f.endswith('.cura')]
@@ -71,7 +83,8 @@ def album_scrape(id):
         models = (jsonitems['models']) or "NULL"
         tags = (jsonitems['tags']) or "NULL"
         site = (jsonitems['site']) or "NULL"
-        title = str(re.findall(r'<h1>(.*?)</h1>', str(contents))).replace("&nbsp;"," ").replace("&mdash;",'-').replace("&ndash;",'-') or "NULL"
+        titlez = re.findall(r'<h1>(.*?)</h1>', str(contents)) or "NULL"
+        title = [w.replace('&mdash;', '-').replace('&amp;', '&').replace('&nbsp;', ' ').replace('\\', '') for w in titlez]
 
         data = {}
         data['album_data'] = []
@@ -83,14 +96,14 @@ def album_scrape(id):
             })
         with open(path + '/data.json', 'w') as outfile:
             json.dump(data, outfile)
-        print("Downloading(" + str(id) + ") -> " + str(title[0]))
+        print(bcolors.OKGREEN + "Downloading(" + str(id) + ")"  + bcolors.ENDC +" -> " + str(models[0]) + " | " + str(title[0]))
 
-        urllib.request.urlretrieve("https://y2.pichunter.com/" + str(id) + "_1_o.jpg", pics_directory + "/" + str(id) + "/" + str(id) + "_1_o.jpg")
-        complete_album(id)
+        #urllib.request.urlretrieve("https://y2.pichunter.com/" + str(id) + "_1_o.jpg", pics_directory + "/" + str(id) + "/" + str(id) + "_1_o.jpg")
+        #complete_album(id)
     except:
         if os.path.exists(path) and os.path.isdir(path):
             shutil.rmtree(path)
-        print("Album not found(" + str(id) + ")")
+        #print("Album not found(" + str(id) + ")")
         return
 
 #download whole album
@@ -98,13 +111,13 @@ def complete_album(id):
     for item in range(2, 31):
         try:
             urllib.request.urlretrieve("https://y2.pichunter.com/" + str(id) + "_" + str(item) + "_o.jpg", pics_directory + "/" + str(id) + "/" + str(id) + "_" + str(item) + "_o.jpg")
-            #print("Downloaded " + str(id) + " - " + str(item))
         except:
             print("Successfully downloaded(" + str(id) + ") -> " + str(int(item)-1)) + " photos"
             return
 
 #loop albums
 for x in range(albums_for_once):
-  album_scrape(x+int(last_album))
+    album_scrape(x+int(last_album))
 else:
-  print("Finished downloading " + str(albums_for_once) + " albums. Thank you!")
+    print("")
+    print("Finished downloading " + str(albums_for_once) + " albums. Thank you!")
