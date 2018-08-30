@@ -98,8 +98,8 @@ def album_scrape(id):
             json.dump(data, outfile)
         print(bcolors.OKGREEN + "Downloading(" + str(id) + ")"  + bcolors.ENDC +" -> " + str(models[0]) + " | " + str(title[0]))
 
-        #urllib.request.urlretrieve("https://y2.pichunter.com/" + str(id) + "_1_o.jpg", pics_directory + "/" + str(id) + "/" + str(id) + "_1_o.jpg")
-        #complete_album(id)
+        urllib.request.urlretrieve("https://y2.pichunter.com/" + str(id) + "_1_o.jpg", pics_directory + "/" + str(id) + "/" + str(id) + "_1_o.jpg")
+        complete_album(id)
     except:
         if os.path.exists(path) and os.path.isdir(path):
             shutil.rmtree(path)
