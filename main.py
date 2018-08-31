@@ -73,7 +73,7 @@ def album_scrape(id):
         if not os.path.exists(path):
             os.mkdir(path)
         else:
-            print("Already downloaded album - " + str(id))
+            print(bcolors.HEADER + "Skipping (" + str(id) + ")" + bcolors.ENDC)
             return
 
         #json
@@ -96,24 +96,30 @@ def album_scrape(id):
             })
         with open(path + '/data.json', 'w') as outfile:
             json.dump(data, outfile)
-        print(bcolors.OKGREEN + "Downloading(" + str(id) + ")"  + bcolors.ENDC +" -> " + str(models[0]) + " | " + str(title[0]))
-
-        urllib.request.urlretrieve("https://y2.pichunter.com/" + str(id) + "_1_o.jpg", pics_directory + "/" + str(id) + "/" + str(id) + "_1_o.jpg")
-        complete_album(id)
+        print(bcolors.OKGREEN + "Downloading(" + str(id) + ")" + bcolors.ENDC +" -> " + str(models[0]) + " | " + str(title[0]))
     except:
-        if os.path.exists(path) and os.path.isdir(path):
-            shutil.rmtree(path)
-        #print("Album not found(" + str(id) + ")")
+        if os.path.exists(pics_directory + "/" + str(id)) and os.path.isdir(pics_directory + "/" + str(id)):
+            shutil.rmtree(pics_directory + "/" + str(id))
+        print(bcolors.FAIL + "Album not found(" + str(id) + ")" + bcolors.ENDC)
         return
+
+        #urllib.request.urlretrieve("https://y2.pichunter.com/" + str(id) + "_1_o.jpg", pics_directory + "/" + str(id) + "/" + str(id) + "_1_o.jpg")
+    complete_album(id)
+
 
 #download whole album
 def complete_album(id):
-    for item in range(2, 31):
+    #try:
+    for item in range(1, 51):
         try:
             urllib.request.urlretrieve("https://y2.pichunter.com/" + str(id) + "_" + str(item) + "_o.jpg", pics_directory + "/" + str(id) + "/" + str(id) + "_" + str(item) + "_o.jpg")
         except:
-            print("Successfully downloaded(" + str(id) + ") -> " + str(int(item)-1)) + " photos"
+            print("Successfully downloaded(" + str(id) + ") -> " + str(int(item)-1) + " photos")
             return
+        #print("fff")
+    #except:
+        #print("Successfully downloaded(" + str(id) + ") -> " + str(int(item)-1)) + " photos"
+        #return
 
 #loop albums
 for x in range(albums_for_once):
